@@ -1,7 +1,11 @@
 import os
-import datetime
+import coloredlogs
+
 from dotenv import load_dotenv
 from VehicleClient import VehicleClient
+
+# Install colored logs
+coloredlogs.install(level='DEBUG', isatty=True)
 
 def main():
     # Load environment variables

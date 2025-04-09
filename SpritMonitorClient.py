@@ -1,5 +1,4 @@
 import requests
-import os
 
 SM_API_URL = "https://api.spritmonitor.de/v1"
 

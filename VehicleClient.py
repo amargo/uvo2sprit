@@ -1,8 +1,9 @@
 import os
 import logging
 import datetime
+
+from datetime import timedelta
 from enum import Enum
-from dateutil.relativedelta import relativedelta
 from hyundai_kia_connect_api import Vehicle, VehicleManager
 from SpritMonitorClient import SpritMonitorClient
 
@@ -255,13 +256,6 @@ class VehicleClient:
         First checks the latest entry in Spritmonitor, then processes only older entries.
         Skips today's data to avoid frequent updates, and only uploads historical data
         that is complete.
-        
-        The process:
-        1. Gets latest entries from Spritmonitor
-        2. Skips today's data entirely
-        3. Calculates odometer values from newest to oldest
-        4. Filters out already uploaded entries
-        5. Uploads new entries from oldest to newest
         """
         try:
             # Get the latest entry from Spritmonitor
@@ -301,25 +295,45 @@ class VehicleClient:
             current_odometer -= day.distance
 
         # Filter out today's data and days that are already in Spritmonitor
-        today = datetime.datetime.now().date()
-        if latest_date:
+        today = datetime.date.today()
+        if latest_date and latest_date >= (today - timedelta(days=1)):
             self.logger.info("No historical entries to process - all data up to latest entry is already uploaded")
             return
 
-        # No latest entry found, process all historical data
+        # Filter and sort stats
         filtered_stats = [
             day for day in sorted_daily_stats
-            if day.date.date() < today  # Skip today's data
+            if (not latest_date or day.date.date() > latest_date) and day.date.date() < today
         ]
 
         if filtered_stats:
             self.logger.info(f"Found {len(filtered_stats)} historical entries to upload")
-            # Sort chronologically (oldest to newest) for upload
-            filtered_stats.sort(key=lambda x: x.date)
+            filtered_stats.sort(key=lambda x: x.date)  # Sort oldest to newest
+            
+            current_month = None
             for day in filtered_stats:
+                # Check if we entered a new month
+                month = day.date.strftime("%Y%m")
+                if month != current_month:
+                    self.update_trip_info_for_month(month)
+                    current_month = month
+                
                 self.send_consumption_to_spritmonitor(day)
         else:
             self.logger.info("No historical entries to upload")
+
+    def update_trip_info_for_month(self, month_str: str) -> bool:
+        """
+        Update trip info for a specific month
+        :param month_str: Month in YYYYMM format
+        :return: True if update was successful, False otherwise
+        """
+        try:
+            self.vm.update_month_trip_info(self.vehicle.id, month_str)
+            return True
+        except Exception as e:
+            self.logger.error(f"Failed to get trip info for {month_str}: {e}")
+            return False
 
     def handle_api_exception(self, exc: Exception):
         """
@@ -354,16 +368,12 @@ class VehicleClient:
             self.logger.exception("server responded with error:", exc_info=exc)
             self.db_client.log_error(exception=exc)
             return
-            # self.logger.info("sleeping for 60 seconds before next attempt")
-            # time.sleep(60)
 
         # any other exception
         else:
             self.logger.exception("generic error:", exc_info=exc)
             self.db_client.log_error(exception=exc)
             return
-            # self.logger.info("sleeping for 60 seconds before next attempt")
-            # time.sleep(60)
 
     def send_consumption_to_spritmonitor(self, day_stats):
         """
@@ -394,6 +404,8 @@ class VehicleClient:
                 "quantity": round(day_stats.total_consumed / 1000, 1),  # Convert Wh to kWh
                 "fuelsortid": 5,  # 5 = Electricity
                 "quantityunitid": 5,  # kWh
+                "country": "HU",
+                "stationname": "home",
                 "charging_power": self.charging_power_in_kilowatts,
                 "charging_duration": 0,  # We don't have this info from KIA UVO
                 "charge_info": f"{self.charge_type.value.lower()},source_vehicle",
@@ -407,7 +419,8 @@ class VehicleClient:
                     f"Electronics: {round(day_stats.onboard_electronics_consumption / 1000, 1)} kWh\n"
                     f"Battery Care: {round(day_stats.battery_care_consumption / 1000, 1)} kWh\n"
                     f"Regenerated: {round(day_stats.regenerated_energy / 1000, 1)} kWh\n"
-                    f"Net Consumption: {round((day_stats.total_consumed - day_stats.regenerated_energy) / 1000, 1)} kWh"
+                    f"Net Consumption: {round((day_stats.total_consumed - day_stats.regenerated_energy) / 1000, 1)} kWh\n"
+                    f"Trips: {next((day.trip_count for day in (self.vehicle.month_trip_info.day_list if self.vehicle.month_trip_info else []) if day.yyyymmdd == day_stats.date.strftime('%Y%m%d')), 'N/A')}"
                 )
             }
             
