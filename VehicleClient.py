@@ -5,6 +5,7 @@ import datetime
 from datetime import timedelta
 from enum import Enum
 from hyundai_kia_connect_api import Vehicle, VehicleManager
+from hyundai_kia_connect_api.exceptions import RateLimitingError, APIError, RequestTimeoutError
 from SpritMonitorClient import SpritMonitorClient
 
 class ChargeType(Enum):
@@ -313,6 +314,12 @@ class VehicleClient:
                     self.update_trip_info_for_month(month)
                     current_month = month
                 
+                try:
+                    self.vm.update_day_trip_info(self.vehicle.id, day.date.strftime("%Y%m%d"))
+                except Exception as e:
+                    self.handle_api_exception(e)
+                    return
+                
                 self.send_consumption_to_spritmonitor(day)
         else:
             self.logger.info("No historical entries to upload")
@@ -407,7 +414,7 @@ class VehicleClient:
                 "percent": self.vehicle.ev_battery_percentage,
                 "bc_consumption": round(day_stats.total_consumed / (100 / day_stats.distance) / 1000, 1) if day_stats.distance > 0 else 0,
                 "bc_quantity": round(day_stats.total_consumed / 1000, 1),  # Total consumption in kWh
-                "bc_speed": 0,  # We don't have average speed from daily stats
+                "bc_speed": 0,  # Will be updated if we have valid trips
                 "note": (
                     f"Engine: {round(day_stats.engine_consumption / 1000, 1)} kWh\n"
                     f"Climate: {round(day_stats.climate_consumption / 1000, 1)} kWh\n"
@@ -415,10 +422,38 @@ class VehicleClient:
                     f"Battery Care: {round(day_stats.battery_care_consumption / 1000, 1)} kWh\n"
                     f"Regenerated: {round(day_stats.regenerated_energy / 1000, 1)} kWh\n"
                     f"Net Consumption: {round((day_stats.total_consumed - day_stats.regenerated_energy) / 1000, 1)} kWh\n"
-                    f"Trips: {next((day.trip_count for day in (self.vehicle.month_trip_info.day_list if self.vehicle.month_trip_info else []) if day.yyyymmdd == day_stats.date.strftime('%Y%m%d')), 'N/A')}"
-                )
-            }
-            
+                        )
+            }            
+
+            if hasattr(self.vehicle, 'day_trip_info') and self.vehicle.day_trip_info and hasattr(self.vehicle.day_trip_info, 'trip_list'):
+                trips = self.vehicle.day_trip_info.trip_list
+                if trips:
+                    # Calculate daily statistics from individual trips
+                    total_drive_time = sum(trip.drive_time for trip in trips)  # in minutes
+                    total_idle_time = sum(trip.idle_time for trip in trips)    # in minutes
+                    # Filter out invalid trips (with 0 distance or speed)
+                    valid_trips = [trip for trip in trips if trip.distance > 0 and trip.max_speed > 0]
+                    
+                    if valid_trips:
+                        avg_speed = sum(trip.avg_speed * trip.distance for trip in valid_trips) / sum(trip.distance for trip in valid_trips)
+                        max_speed = max(trip.max_speed for trip in valid_trips)
+                        
+                        # Update bc_speed with the calculated average speed
+                        consumption_data["bc_speed"] = round(avg_speed, 1)
+                        
+                        # Convert minutes to hours and remaining minutes
+                        drive_time_hours = total_drive_time // 60
+                        drive_time_minutes = total_drive_time % 60
+                        
+                        consumption_data["note"] += (
+                            f"\nTrip details:"
+                            f"\n- Drive time: {drive_time_hours}h {drive_time_minutes}m"
+                            f"\n- Idle time: {total_idle_time}m"
+                            f"\n- Avg speed: {avg_speed:.1f} km/h"
+                            f"\n- Max speed: {max_speed} km/h"
+                            f"\n- Number of trips: {len(trips)}"
+                        )
+
             # Send data to Spritmonitor
             response = self.spritmonitor.upload_consumption_data(
                 vehicle_id=self.spritmonitor_vehicle_id,
