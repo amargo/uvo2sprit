@@ -195,8 +195,6 @@ class VehicleClient:
 
         self.get_estimated_charging_power()
 
-        self.set_interval()
-
         # Get driving info to update daily stats
         try:
             response = self.vm.api._get_driving_info(self.vm.token, self.vehicle)
@@ -218,37 +216,34 @@ class VehicleClient:
                 f"Negative delta ({delta.total_seconds()}s), probably a timezone issue. Check your logic.")
             raise RuntimeError()
 
-        if delta.total_seconds() > self.interval_in_seconds:
-            self.logger.info("Performing force refresh...")
-            try:
-                self.vm.force_refresh_vehicle_state(self.vehicle.id)
-            except Exception as e:
-                self.handle_api_exception(e)
-                return
+        self.logger.info("Performing force refresh...")
+        try:
+            self.vm.force_refresh_vehicle_state(self.vehicle.id)
+        except Exception as e:
+            self.handle_api_exception(e)
+            return
 
-            self.logger.info(f"Data received by server. Now retrieving from server...")
+        self.logger.info(f"Data received by server. Now retrieving from server...")
 
-            try:
-                self.vm.update_vehicle_with_cached_state(self.vehicle.id)
-            except Exception as e:
-                self.handle_api_exception(e)
-                return
+        try:
+            self.vm.update_vehicle_with_cached_state(self.vehicle.id)
+        except Exception as e:
+            self.handle_api_exception(e)
+            return
 
-            self.get_estimated_charging_power()
+        self.get_estimated_charging_power()
 
-            self.set_interval()
+        # Get latest driving info and upload to Spritmonitor
+        try:
+            response = self.vm.api._get_driving_info(self.vm.token, self.vehicle)
+        except Exception as e:
+            self.handle_api_exception(e)
+            return
 
-            # Get latest driving info and upload to Spritmonitor
-            try:
-                response = self.vm.api._get_driving_info(self.vm.token, self.vehicle)
-            except Exception as e:
-                self.handle_api_exception(e)
-                return
+        self.vm.api._update_vehicle_drive_info(self.vehicle, response)
 
-            self.vm.api._update_vehicle_drive_info(self.vehicle, response)
-
-            # Process and upload daily stats
-            self.process_and_upload_daily_stats()
+        # Process and upload daily stats
+        self.process_and_upload_daily_stats()
 
     def process_and_upload_daily_stats(self):
         """
@@ -435,19 +430,3 @@ class VehicleClient:
         except Exception as e:
             self.logger.error(f"Failed to upload consumption data to Spritmonitor: {str(e)}")
             raise
-
-    def set_interval(self):
-        if self.vehicle.engine_is_running and not self.vehicle.ev_battery_is_charging:
-            # for an EV: "engine running" supposedly means the contact is set and the car is "ready to drive"
-            # engine is also reported as "running" in utility mode.
-            self.interval_in_seconds = self.ENGINE_RUNNING_FORCE_REFRESH_INTERVAL
-            self.charging_power_in_kilowatts = 0
-        elif self.vehicle.ev_battery_is_charging:
-            # battery is charging, we can poll more often without draining the 12v battery
-            if self.charge_type == ChargeType.DC:
-                self.interval_in_seconds = self.DC_CHARGE_FORCE_REFRESH_INTERVAL
-            elif self.charge_type in (ChargeType.AC, ChargeType.UNKNOWN):
-                self.interval_in_seconds = self.AC_CHARGE_FORCE_REFRESH_INTERVAL
-        else:
-            # car is off
-            self.interval_in_seconds = self.CAR_OFF_FORCE_REFRESH_INTERVAL
