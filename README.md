@@ -63,3 +63,25 @@ The application will:
 - Kia UVO API is limited to 200 requests per day
 - The application is designed to handle these limits gracefully
 - By default, it only fetches the last 30 days of data
+
+## Docker
+[![Docker Image](https://github.com/amargo/uvo2sprit/actions/workflows/ci.yml/badge.svg)](https://github.com/amargo/uvo2sprit/pkgs/container/uvo2sprit)
+[![Docker Hub](https://img.shields.io/docker/v/gszoboszlai/uvo2sprit?label=Docker%20Hub)](https://hub.docker.com/r/gszoboszlai/uvo2sprit)
+
+You can run this application using Docker. The image is available on both GitHub Container Registry and Docker Hub:
+
+```bash
+# Using GitHub Container Registry:
+docker pull ghcr.io/amargo/uvo2sprit:main
+
+# Or using Docker Hub:
+docker pull gszoboszlai/uvo2sprit:latest
+
+# Create a .env file with your credentials (see Configuration section)
+# Then run the container (using either image):
+docker run --rm -v ${PWD}/.env:/app/.env ghcr.io/amargo/uvo2sprit:main
+# or
+docker run --rm -v ${PWD}/.env:/app/.env gszoboszlai/uvo2sprit:latest
+```
+
+The container will automatically fetch and upload your trip data according to the configuration in your `.env` file.
