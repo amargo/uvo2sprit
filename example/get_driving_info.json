@@ -1,0 +1,13 @@
+{'retCode': 'S', 'resCode': '0000', 'resMsg': {'drivingInfo': [
+            {'drivingPeriod': 0, 'totalPwrCsp': 280190, 'motorPwrCsp': 230181, 'climatePwrCsp': 21007, 'eDPwrCsp': 28720, 'batteryMgPwrCsp': 200, 'regenPwr': 94579, 'calculativeOdo': 1896
+            },
+            {'drivingPeriod': 1, 'totalPwrCsp': 8755, 'motorPwrCsp': 7193, 'climatePwrCsp': 656, 'eDPwrCsp': 897, 'batteryMgPwrCsp': 6, 'regenPwr': 2955, 'calculativeOdo': 59.25
+            }
+        ], 'drivingInfoDetail': [
+            {'drivingPeriod': 1, 'drivingDate': '202504', 'totalPwrCsp': 89556, 'motorPwrCsp': 76926, 'climatePwrCsp': 5451, 'eDPwrCsp': 7150, 'batteryMgPwrCsp': 0, 'regenPwr': 29968, 'calculativeOdo': 592
+            },
+            {'drivingPeriod': 1, 'drivingDate': '202503', 'totalPwrCsp': 190634, 'motorPwrCsp': 153255, 'climatePwrCsp': 15556, 'eDPwrCsp': 21570, 'batteryMgPwrCsp': 200, 'regenPwr': 64611, 'calculativeOdo': 1304
+            }
+        ]
+    }, 'msgId': '99915360-1515-11f0-91f6-aeb91e164b05'
+}

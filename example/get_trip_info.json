@@ -1,0 +1,52 @@
+{'retCode': 'S', 'resCode': '0000', 'resMsg': {'tripPeriodType': 0, 'monthTripDayCnt': 24, 'tripDayList': [
+            {'tripDayInMonth': '20250308', 'tripCntDay': 11
+            },
+            {'tripDayInMonth': '20250309', 'tripCntDay': 6
+            },
+            {'tripDayInMonth': '20250310', 'tripCntDay': 13
+            },
+            {'tripDayInMonth': '20250311', 'tripCntDay': 4
+            },
+            {'tripDayInMonth': '20250312', 'tripCntDay': 6
+            },
+            {'tripDayInMonth': '20250313', 'tripCntDay': 11
+            },
+            {'tripDayInMonth': '20250314', 'tripCntDay': 14
+            },
+            {'tripDayInMonth': '20250315', 'tripCntDay': 4
+            },
+            {'tripDayInMonth': '20250316', 'tripCntDay': 4
+            },
+            {'tripDayInMonth': '20250317', 'tripCntDay': 7
+            },
+            {'tripDayInMonth': '20250318', 'tripCntDay': 7
+            },
+            {'tripDayInMonth': '20250319', 'tripCntDay': 8
+            },
+            {'tripDayInMonth': '20250320', 'tripCntDay': 13
+            },
+            {'tripDayInMonth': '20250321', 'tripCntDay': 6
+            },
+            {'tripDayInMonth': '20250322', 'tripCntDay': 2
+            },
+            {'tripDayInMonth': '20250323', 'tripCntDay': 1
+            },
+            {'tripDayInMonth': '20250324', 'tripCntDay': 10
+            },
+            {'tripDayInMonth': '20250325', 'tripCntDay': 7
+            },
+            {'tripDayInMonth': '20250326', 'tripCntDay': 8
+            },
+            {'tripDayInMonth': '20250327', 'tripCntDay': 6
+            },
+            {'tripDayInMonth': '20250328', 'tripCntDay': 8
+            },
+            {'tripDayInMonth': '20250329', 'tripCntDay': 7
+            },
+            {'tripDayInMonth': '20250330', 'tripCntDay': 3
+            },
+            {'tripDayInMonth': '20250331', 'tripCntDay': 8
+            }
+        ], 'tripDrvTime': 1929, 'tripIdleTime': 330, 'tripDist': 1304, 'tripAvgSpeed': 34.2, 'tripMaxSpeed': 163
+    }, 'msgId': '8a0618f0-1514-11f0-91f6-62d1ae6e44d7'
+}

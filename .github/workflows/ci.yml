@@ -23,7 +23,7 @@ jobs:
           flavor: latest=true
           images: |
             ghcr.io/${{ github.repository }}
-            docker.io/${{ github.repository }}
+            docker.io/gszoboszlai/uvo2sprit
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
