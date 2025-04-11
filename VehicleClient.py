@@ -47,6 +47,12 @@ class VehicleClient:
             app_token=os.environ.get("SPRITMONITOR_APP_TOKEN")
         )
 
+        # Get electricity price from environment variable, default to 41
+        self.electricity_price = float(os.getenv('ELECTRICITY_PRICE', 41))
+        
+        # Get currency ID from environment variable, default to 11 (HUF)
+        self.currency_id = int(os.getenv('CURRENCY_ID', 11))
+
         # interval in seconds between checks for cached requests
         # we are limited to 200 requests a day, including cached
         # that's about one every 8 minutes
@@ -410,6 +416,9 @@ class VehicleClient:
                 "bc_consumption": round(day_stats.total_consumed / (100 / day_stats.distance) / 1000, 1) if day_stats.distance > 0 else 0,
                 "bc_quantity": round(day_stats.total_consumed / 1000, 1),  # Total consumption in kWh
                 "bc_speed": 0,  # Will be updated if we have valid trips
+                "price": self.electricity_price,  # Price per kWh
+                "currencyid": self.currency_id,
+                "pricetype": 1,  # 1 = unit price (per kWh)
                 "note": (
                     f"Engine: {round(day_stats.engine_consumption / 1000, 1)} kWh\n"
                     f"Climate: {round(day_stats.climate_consumption / 1000, 1)} kWh\n"

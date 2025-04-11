@@ -28,15 +28,59 @@ A Python-based application that automatically retrieves historical drive data fr
    cp .env.example .env
    ```
 
+## Spritmonitor Currency IDs
+
+The following currency IDs are supported by Spritmonitor:
+
+| ID | Currency |
+|----|----------|
+| 0 | EUR |
+| 1 | CHF |
+| 2 | USD |
+| 3 | CAD |
+| 4 | GBP |
+| 5 | DKK |
+| 6 | NOK |
+| 7 | SEK |
+| 8 | PLN |
+| 9 | SKK |
+| 10 | CZK |
+| 11 | HUF |
+| 12 | SIT |
+| 13 | DEM |
+| 14 | BRL |
+| 15 | HRK |
+| 16 | BGN |
+| 17 | ARS |
+| 18 | CLP |
+| 19 | AUD |
+| 20 | LTL |
+| 21 | LVL |
+| 22 | RON |
+| 23 | RUB |
+| 24 | EEK |
+| 25 | ILS |
+| 26 | BYR |
+| 27 | TRY |
+| 28 | SGD |
+| 29 | MYR |
+| 30 | ISK |
+| 31 | YEN |
+| 32 | CNY |
+| 33 | RSD |
+
 ## Configuration
-Edit the `.env` file with your credentials:
+The following environment variables can be set in the `.env` file:
 - `KIA_USERNAME`: Your Kia UVO username
 - `KIA_PASSWORD`: Your Kia UVO password
 - `KIA_VEHICLE_UUID`: Your vehicle's UUID from Kia UVO
-- `SPRITMONITOR_BEARER_TOKEN`: Your SpritMonitor bearer token
-- `SPRITMONITOR_APP_TOKEN`: Your SpritMonitor app token
-- `SPRITMONITOR_VEHICLE_ID`: Your vehicle ID on SpritMonitor
-- `SPRITMONITOR_TANK_ID`: Tank ID for your vehicle (default: 1 for EVs)
+- `KIA_PIN`: Your Kia UVO PIN
+- `SPRITMONITOR_APP_TOKEN`: Your Spritmonitor API token
+- `SPRITMONITOR_BEARER_TOKEN`: Your Spritmonitor bearer token
+- `SPRITMONITOR_VEHICLE_ID`: Your vehicle ID on Spritmonitor
+- `SPRITMONITOR_TANK_ID`: Tank ID for your vehicle (default: 1)
+- `ELECTRICITY_PRICE`: Price of electricity per kWh (default: 41)
+- `CURRENCY_ID`: Currency ID for electricity price (default: 11 for HUF, see Currency IDs section)
 
 ## Usage
 Run the application:
