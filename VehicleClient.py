@@ -350,7 +350,6 @@ class VehicleClient:
             self.logger.exception(
                 "we got rate limited, probably exceeded 200 requests. exiting",
                 exc_info=exc)
-            self.db_client.log_error(exception=exc)
             # time.sleep(3600 * 4)
             return
 
@@ -361,20 +360,16 @@ class VehicleClient:
                 "The vehicle did not respond. Exiting to prevent too many unsuccessful requests "
                 "that would lead to rate limiting ",
                 exc_info=exc)
-            self.db_client.log_error(exception=exc)
-            return
             # time.sleep(3600)
 
         # broad API error
         elif isinstance(exc, APIError):
             self.logger.exception("server responded with error:", exc_info=exc)
-            self.db_client.log_error(exception=exc)
             return
 
         # any other exception
         else:
             self.logger.exception("generic error:", exc_info=exc)
-            self.db_client.log_error(exception=exc)
             return
 
     def send_consumption_to_spritmonitor(self, day_stats):
