@@ -413,6 +413,7 @@ class VehicleClient:
                 "charging_duration": 0,  # We don't have this info from KIA UVO
                 "charge_info": f"{self.charge_type.value.lower()},source_vehicle",
                 "percent": self.vehicle.ev_battery_percentage,
+                "type": "full",  # We don't have this info from KIA UVO, set to full so Spritmonitor calculates consumption correctly
                 "bc_consumption": round(day_stats.total_consumed / (100 / day_stats.distance) / 1000, 1) if day_stats.distance > 0 else 0,
                 "bc_quantity": round(day_stats.total_consumed / 1000, 1),  # Total consumption in kWh
                 "bc_speed": 0,  # Will be updated if we have valid trips

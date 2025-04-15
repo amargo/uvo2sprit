@@ -65,5 +65,5 @@
             {'drivingPeriod': 0, 'drivingDate': '20250311', 'totalPwrCsp': 3287, 'motorPwrCsp': 1946, 'climatePwrCsp': 841, 'eDPwrCsp': 500, 'batteryMgPwrCsp': 0, 'regenPwr': 918, 'calculativeOdo': 21
             }
         ]
-    }, 'msgId': '89dc70e0-1514-11f0-860d-6a7469a52061'
+    }
 }

@@ -1,0 +1,9 @@
+DayTripInfo(yyyymmdd='20250411', 
+summary=TripInfo(hhmmss=None, drive_time=201, idle_time=22, distance=189, avg_speed=54, max_speed=144), 
+trip_list=[
+TripInfo(hhmmss='192241', drive_time=62, idle_time=4, distance=79, avg_speed=88, max_speed=144), 
+TripInfo(hhmmss='163307', drive_time=70, idle_time=5, distance=76, avg_speed=74, max_speed=134), 
+TripInfo(hhmmss='132709', drive_time=42, idle_time=8, distance=24, avg_speed=46, max_speed=99), 
+TripInfo(hhmmss='080524', drive_time=3, idle_time=1, distance=0, avg_speed=26, max_speed=45), 
+TripInfo(hhmmss='073606', drive_time=24, idle_time=4, distance=10, avg_speed=36, max_speed=79)
+])

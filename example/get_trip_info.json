@@ -48,5 +48,5 @@
             {'tripDayInMonth': '20250331', 'tripCntDay': 8
             }
         ], 'tripDrvTime': 1929, 'tripIdleTime': 330, 'tripDist': 1304, 'tripAvgSpeed': 34.2, 'tripMaxSpeed': 163
-    }, 'msgId': '8a0618f0-1514-11f0-91f6-62d1ae6e44d7'
+    }
 }

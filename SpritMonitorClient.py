@@ -169,18 +169,18 @@ class SpritMonitorClient:
         """
         url = f"{self.base_url}/vehicle/{vehicle_id}/tank/{tank_id}/fueling.json"
         
-        # Build the query string with all parameters
-        params = {
+        # Build request data
+        request_data = {
             "date": data["date"],
             "odometer": data["odometer"],
             "trip": data["trip"],
             "quantity": data["quantity"],
-            "type": "full",  # assuming always full charge
-            "price": "0",  # optional
-            "currencyid": "0",  # optional
-            "pricetype": "0",  # total price
+            "type": data["type"],  # can be: invalid, full, notfull, first
+            "price": data["price"],
+            "currencyid": data["currencyid"],
+            "pricetype": data["pricetype"],
             "fuelsortid": "19",  # Elektrizität (ID 19) or Ökostrom (ID 24)
-            "quantityunitid": "5",  # Kilowatt hour
+            "quantityunitid": data["quantityunitid"],
             "charge_info": f"{data['charge_info']},source_vehicle",  # add source_vehicle since we get data from the car
             "percent": data["percent"],
             "bc_consumption": data.get("bc_consumption", ""),
@@ -194,14 +194,14 @@ class SpritMonitorClient:
         # Only add charging power and duration if they are valid values
         charging_power = data.get("charging_power")
         if charging_power and charging_power > 0:
-            params["charging_power"] = str(charging_power)
+            request_data["charging_power"] = str(charging_power)
 
         charging_duration = data.get("charging_duration")
         if charging_duration and charging_duration > 0:
-            params["charging_duration"] = str(charging_duration)
+            request_data["charging_duration"] = str(charging_duration)
         
-        # Convert params to query string and URL encode it
-        query_string = "&".join([f"{k}={requests.utils.quote(str(v))}" for k, v in params.items() if v != ""])
+        # Convert request data to query string and URL encode it
+        query_string = "&".join([f"{k}={requests.utils.quote(str(v))}" for k, v in request_data.items() if v != ""])
         url = f"{url}?{query_string}"
         
         return self._send_request("GET", url)
