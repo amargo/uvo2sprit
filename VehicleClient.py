@@ -414,22 +414,22 @@ class VehicleClient:
                 "charge_info": f"{self.charge_type.value.lower()},source_vehicle",
                 "percent": self.vehicle.ev_battery_percentage,
                 "type": "full",  # We don't have this info from KIA UVO, set to full so Spritmonitor calculates consumption correctly
-                "bc_consumption": round(day_stats.total_consumed / (100 / day_stats.distance) / 1000, 1) if day_stats.distance > 0 else 0,
+                "bc_consumption": round(day_stats.distance / (day_stats.total_consumed / 1000), 1) if day_stats.total_consumed > 0 else 0,  # km/kWh
                 "bc_quantity": round(day_stats.total_consumed / 1000, 1),  # Total consumption in kWh
                 "bc_speed": 0,  # Will be updated if we have valid trips
                 "price": self.electricity_price,  # Price per kWh
                 "currencyid": self.currency_id,
                 "pricetype": 1,  # 1 = unit price (per kWh)
-                "note": (
-                    f"Engine: {round(day_stats.engine_consumption / 1000, 1)} kWh\n"
-                    f"Climate: {round(day_stats.climate_consumption / 1000, 1)} kWh\n"
-                    f"Electronics: {round(day_stats.onboard_electronics_consumption / 1000, 1)} kWh\n"
-                    f"Battery Care: {round(day_stats.battery_care_consumption / 1000, 1)} kWh\n"
-                    f"Regenerated: {round(day_stats.regenerated_energy / 1000, 1)} kWh\n"
-                    f"Net Consumption: {round((day_stats.total_consumed - day_stats.regenerated_energy) / 1000, 1)} kWh\n"
-                        )
-            }            
-
+            }
+            consumption_data["note"] = (
+                f"Engine: {round(day_stats.engine_consumption / 1000, 1)} kWh\n"
+                f"Climate: {round(day_stats.climate_consumption / 1000, 1)} kWh\n"
+                f"Electronics: {round(day_stats.onboard_electronics_consumption / 1000, 1)} kWh\n"
+                f"Battery Care: {round(day_stats.battery_care_consumption / 1000, 1)} kWh\n"
+                f"Regenerated: {round(day_stats.regenerated_energy / 1000, 1)} kWh\n"
+                f"Net Consumption: {round((day_stats.total_consumed - day_stats.regenerated_energy) / 1000, 1)} kWh\n"
+            )
+            
             if hasattr(self.vehicle, 'day_trip_info') and self.vehicle.day_trip_info and hasattr(self.vehicle.day_trip_info, 'trip_list'):
                 trips = self.vehicle.day_trip_info.trip_list
                 if trips:
