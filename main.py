@@ -13,10 +13,10 @@ def main():
 
     # Initialize vehicle client
     vehicle_client = VehicleClient(
-        username=os.environ["KIA_USERNAME"],
-        password=os.environ["KIA_PASSWORD"],
-        pin=os.environ["KIA_PIN"],
-        vehicle_uuid=os.environ["KIA_VEHICLE_UUID"]
+        username=os.environ["UVO_USERNAME"],
+        password=os.environ["UVO_PASSWORD"],
+        pin=os.environ["UVO_PIN"],
+        vehicle_uuid=os.environ["UVO_VEHICLE_UUID"]
     )
     
     # Initialize vehicle connection

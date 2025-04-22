@@ -71,10 +71,10 @@ The following currency IDs are supported by Spritmonitor:
 
 ## Configuration
 The following environment variables can be set in the `.env` file:
-- `KIA_USERNAME`: Your Kia UVO username
-- `KIA_PASSWORD`: Your Kia UVO password
-- `KIA_VEHICLE_UUID`: Your vehicle's UUID from Kia UVO
-- `KIA_PIN`: Your Kia UVO PIN
+- `UVO_USERNAME`: Your Kia UVO/Bluelink username
+- `UVO_PASSWORD`: Your Kia UVO/Bluelink password
+- `UVO_VEHICLE_UUID`: Your vehicle's UUID from Kia UVO/Bluelink
+- `UVO_PIN`: Your Kia UVO/Bluelink PIN
 - `SPRITMONITOR_APP_TOKEN`: Your Spritmonitor API token
 - `SPRITMONITOR_BEARER_TOKEN`: Your Spritmonitor bearer token
 - `SPRITMONITOR_VEHICLE_ID`: Your vehicle ID on Spritmonitor
@@ -129,3 +129,43 @@ docker run --rm -v ${PWD}/.env:/app/.env gszoboszlai/uvo2sprit:latest
 ```
 
 The container will automatically fetch and upload your trip data according to the configuration in your `.env` file.
+
+---
+
+## Kia e-Niro MY20 Electric Consumption Calculation (Example & Explanation)
+
+You can calculate the consumption of an electric vehicle in several ways. The following examples and explanations are based on a real-world trip in April 2025 (192 km driven, 64 kWh net battery).
+
+### 1. Calculation Based on Battery Percentage
+- Start: 100%, End: 55% → Used: 45% × 64 kWh = **28.8 kWh**
+- Consumption: (28.8 kWh / 192 km) × 100 = **15.0 kWh/100 km**
+
+### 2. Calculation Based on UVO Data
+- UVO measured energy: **25.45 kWh**
+- Consumption: (25.45 kWh / 192 km) × 100 = **13.3 kWh/100 km**
+
+#### Including Regeneration (Gross Consumption):
+- Regenerated energy: 7.65 kWh
+- Gross consumption: (25.45 + 7.65) kWh = **33.1 kWh**
+- Gross consumption: (33.1 kWh / 192 km) × 100 = **17.2 kWh/100 km**
+
+### 3. Why Are the Values Different?
+- The calculation based on battery percentage includes all losses (battery heating, BMS, inverter, etc.).
+- The UVO value only measures the energy actually used by the drivetrain, climate, and onboard electronics.
+- Therefore, the UVO value is always lower, while the percentage-based value is typically 10–12% higher.
+
+### 4. Average Consumption and Losses
+Based on the ChatGPT analysis:
+
+| Method                              | Average Consumption (kWh/100 km) |
+|--------------------------------------|----------------------------------|
+| UVO (net average consumption)        | 15.0                             |
+| Real average (with 11% losses)       | 16.7                             |
+
+- The real (gross) consumption is about 1.6 kWh/100 km higher than the UVO value.
+- This difference reflects various losses during driving: inverter, battery heating, control electronics, etc.
+
+### 5. Estimated Range
+- Based on battery percentage: 64 kWh / 15.0 × 100 = **427 km**
+- UVO (net): 64 kWh / 13.3 × 100 = **481 km**
+- Gross (with regeneration): 64 kWh / 17.2 × 100 = **372 km**

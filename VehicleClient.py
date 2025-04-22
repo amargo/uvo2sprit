@@ -17,7 +17,7 @@ class VehicleClient:
     """
     Vehicle client class
     Role:
-    - get trip data from Kia UVO API
+    - get trip data from UVO/Bluelink API
     - handle additional (calculated) attributes that the API does not provide
     - send consumption data to Spritmonitor API
     """
@@ -25,10 +25,10 @@ class VehicleClient:
     def __init__(self, username: str, password: str, pin: str, vehicle_uuid: str):
         """
         Initialize the VehicleClient
-        :param username: Kia UVO username
-        :param password: Kia UVO password
-        :param pin: Kia UVO PIN
-        :param vehicle_uuid: Kia UVO vehicle UUID
+        :param username: UVO/Bluelink username
+        :param password: UVO/Bluelink password
+        :param pin: UVO/Bluelink PIN
+        :param vehicle_uuid: UVO/Bluelink vehicle UUID
         """
         self.interval_in_seconds: int = 3600 * 4  # default
         self.charging_power_in_kilowatts: int = 0  # default = 0 (not charging)
