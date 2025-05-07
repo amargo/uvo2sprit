@@ -75,7 +75,7 @@ The following environment variables can be set in the `.env` file:
 - `UVO_PASSWORD`: Your Kia UVO/Bluelink password
 - `UVO_VEHICLE_UUID`: Your vehicle's UUID from Kia UVO/Bluelink
 - `UVO_PIN`: Your Kia UVO/Bluelink PIN
-- `SPRITMONITOR_APP_TOKEN`: Your Spritmonitor API token
+- `SPRITMONITOR_APP_TOKEN`: Your Spritmonitor API token (you can use `190e3b1080a39777f369a4e9875df3d7` as described in the hassio forum: https://community.home-assistant.io/t/rest-sensor-for-spritmonitor-de-vehicle-fuel-and-cost-tracker/766137/5)
 - `SPRITMONITOR_BEARER_TOKEN`: Your Spritmonitor bearer token
 - `SPRITMONITOR_VEHICLE_ID`: Your vehicle ID on Spritmonitor
 - `SPRITMONITOR_TANK_ID`: Tank ID for your vehicle (default: 1)
