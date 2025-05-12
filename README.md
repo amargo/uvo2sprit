@@ -28,47 +28,6 @@ A Python-based application that automatically retrieves historical drive data fr
    cp .env.example .env
    ```
 
-## Spritmonitor Currency IDs
-
-The following currency IDs are supported by Spritmonitor:
-
-| ID | Currency |
-|----|----------|
-| 0 | EUR |
-| 1 | CHF |
-| 2 | USD |
-| 3 | CAD |
-| 4 | GBP |
-| 5 | DKK |
-| 6 | NOK |
-| 7 | SEK |
-| 8 | PLN |
-| 9 | SKK |
-| 10 | CZK |
-| 11 | HUF |
-| 12 | SIT |
-| 13 | DEM |
-| 14 | BRL |
-| 15 | HRK |
-| 16 | BGN |
-| 17 | ARS |
-| 18 | CLP |
-| 19 | AUD |
-| 20 | LTL |
-| 21 | LVL |
-| 22 | RON |
-| 23 | RUB |
-| 24 | EEK |
-| 25 | ILS |
-| 26 | BYR |
-| 27 | TRY |
-| 28 | SGD |
-| 29 | MYR |
-| 30 | ISK |
-| 31 | YEN |
-| 32 | CNY |
-| 33 | RSD |
-
 ## Configuration
 The following environment variables can be set in the `.env` file:
 - `UVO_USERNAME`: Your Kia UVO/Bluelink username
@@ -91,12 +50,154 @@ To find your vehicle ID (needed for the `UVO_VEHICLE_UUID` setting):
 4. Look for a debug log message that looks like this:
 
 ```
-hyundai_kia_connect_api.KiaUvoApiEU[xxxxx] DEBUG hyundai_kia_connect_api - Get Vehicles Response: {'retCode': 'S', 'resCode': '0000', 'resMsg': {'vehicles': [{'vin': 'KNACC81GFLxxxxxx', 'vehicleId': 'c3c81ec5-xxxx-4459-b6ba-xxxxxxxxxxxx', 'vehicleName': 'E-NIRO', 'type': 'EV', 'tmuNum': '-', 'nickname': 'E-NIRO', 'year': '2020', 'master': True, 'carShare': 0, 'regDate': '2025-03-08 12:03:21.885', 'detailInfo': {'inColor': 'WK', 'outColor': 'B4U', 'saleCarmdlCd': 'DQ', 'bodyType': '2', 'saleCarmdlEnNm': 'E-NIRO'}, 'protocolType': 0, 'ccuCCS2ProtocolSupport': 0}]}, 'msgId': 'dfc59080-2f19-11f0-860d-xxxxxxxxxxxx'}
+hyundai_kia_connect_api.KiaUvoApiEU[xxxxx] DEBUG hyundai_kia_connect_api - Get Vehicles Response: {
+  "retCode": "S",
+  "resCode": "0000",
+  "resMsg": {
+    "vehicles": [
+      {
+        "vin": "KNACC81GFLxxxxxx",
+        "vehicleId": "xxxxxxxx-xxxx-4459-b6ba-xxxxxxxxxxxx",
+        "vehicleName": "E-NIRO",
+        "type": "EV",
+        "tmuNum": "-",
+        "nickname": "E-NIRO",
+        "year": "2020",
+        "master": true,
+        "carShare": 0,
+        "regDate": "2025-03-08 12:03:21.885",
+        "detailInfo": {
+          "inColor": "WK",
+          "outColor": "B4U",
+          "saleCarmdlCd": "DQ",
+          "bodyType": "2",
+          "saleCarmdlEnNm": "E-NIRO"
+        },
+        "protocolType": 0,
+        "ccuCCS2ProtocolSupport": 0
+      }
+    ]
+  },
+  "msgId": "xxxxxxxx-2f19-11f0-860d-xxxxxxxxxxxx"
+}
 ```
 
-5. Copy the `vehicleId` value (e.g., `c3c81ec5-xxxx-4459-b6ba-xxxxxxxxxxxx`) from this log
+5. Copy the `vehicleId` value (e.g., `xxxxxxxx-xxxx-4459-b6ba-xxxxxxxxxxxx`) from this log
 6. Add this value as your `UVO_VEHICLE_UUID` in the `.env` file
 7. Run the application again, and it will now connect to your specific vehicle
+
+
+## Spritmonitor Currency IDs
+
+The following currency IDs are supported by Spritmonitor:
+
+<table>
+  <tr>
+    <td><b>ID</b></td>
+    <td><b>Currency</b></td>
+    <td><b>ID</b></td>
+    <td><b>Currency</b></td>
+    <td><b>ID</b></td>
+    <td><b>Currency</b></td>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>EUR</td>
+    <td>12</td>
+    <td>SIT</td>
+    <td>24</td>
+    <td>EEK</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>CHF</td>
+    <td>13</td>
+    <td>DEM</td>
+    <td>25</td>
+    <td>ILS</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>USD</td>
+    <td>14</td>
+    <td>BRL</td>
+    <td>26</td>
+    <td>BYR</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>CAD</td>
+    <td>15</td>
+    <td>HRK</td>
+    <td>27</td>
+    <td>TRY</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>GBP</td>
+    <td>16</td>
+    <td>BGN</td>
+    <td>28</td>
+    <td>SGD</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>DKK</td>
+    <td>17</td>
+    <td>ARS</td>
+    <td>29</td>
+    <td>MYR</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>NOK</td>
+    <td>18</td>
+    <td>CLP</td>
+    <td>30</td>
+    <td>ISK</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td>SEK</td>
+    <td>19</td>
+    <td>AUD</td>
+    <td>31</td>
+    <td>YEN</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td>PLN</td>
+    <td>20</td>
+    <td>LTL</td>
+    <td>32</td>
+    <td>CNY</td>
+  </tr>
+  <tr>
+    <td>9</td>
+    <td>SKK</td>
+    <td>21</td>
+    <td>LVL</td>
+    <td>33</td>
+    <td>RSD</td>
+  </tr>
+  <tr>
+    <td>10</td>
+    <td>CZK</td>
+    <td>22</td>
+    <td>RON</td>
+    <td></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>11</td>
+    <td>HUF</td>
+    <td>23</td>
+    <td>RUB</td>
+    <td></td>
+    <td></td>
+  </tr>
+</table>
+
 
 ## Usage
 Run the application:
