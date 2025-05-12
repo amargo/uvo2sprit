@@ -73,7 +73,7 @@ The following currency IDs are supported by Spritmonitor:
 The following environment variables can be set in the `.env` file:
 - `UVO_USERNAME`: Your Kia UVO/Bluelink username
 - `UVO_PASSWORD`: Your Kia UVO/Bluelink password
-- `UVO_VEHICLE_UUID`: Your vehicle's UUID from Kia UVO/Bluelink
+- `UVO_VEHICLE_UUID`: Your vehicle's UUID from Kia UVO/Bluelink (see note below on how to find this)
 - `UVO_PIN`: Your Kia UVO/Bluelink PIN
 - `SPRITMONITOR_APP_TOKEN`: Your Spritmonitor API token (you can use `190e3b1080a39777f369a4e9875df3d7` as described in the hassio forum: https://community.home-assistant.io/t/rest-sensor-for-spritmonitor-de-vehicle-fuel-and-cost-tracker/766137/5)
 - `SPRITMONITOR_BEARER_TOKEN`: Your Spritmonitor bearer token
@@ -81,6 +81,22 @@ The following environment variables can be set in the `.env` file:
 - `SPRITMONITOR_TANK_ID`: Tank ID for your vehicle (default: 1)
 - `ELECTRICITY_PRICE`: Price of electricity per kWh (default: 41)
 - `CURRENCY_ID`: Currency ID for electricity price (default: 11 for HUF, see Currency IDs section)
+
+### Finding Your Vehicle ID
+To find your vehicle ID (needed for the `UVO_VEHICLE_UUID` setting):
+
+1. First, set up your `.env` file with just your `UVO_USERNAME`, `UVO_PASSWORD`, and `UVO_PIN` (leave `UVO_VEHICLE_UUID` empty or commented out)
+2. Run the application once: `python main.py`
+3. The application will automatically attempt to retrieve your vehicles from the Kia UVO API
+4. Look for a debug log message that looks like this:
+
+```
+hyundai_kia_connect_api.KiaUvoApiEU[xxxxx] DEBUG hyundai_kia_connect_api - Get Vehicles Response: {'retCode': 'S', 'resCode': '0000', 'resMsg': {'vehicles': [{'vin': 'KNACC81GFLxxxxxx', 'vehicleId': 'c3c81ec5-xxxx-4459-b6ba-xxxxxxxxxxxx', 'vehicleName': 'E-NIRO', 'type': 'EV', 'tmuNum': '-', 'nickname': 'E-NIRO', 'year': '2020', 'master': True, 'carShare': 0, 'regDate': '2025-03-08 12:03:21.885', 'detailInfo': {'inColor': 'WK', 'outColor': 'B4U', 'saleCarmdlCd': 'DQ', 'bodyType': '2', 'saleCarmdlEnNm': 'E-NIRO'}, 'protocolType': 0, 'ccuCCS2ProtocolSupport': 0}]}, 'msgId': 'dfc59080-2f19-11f0-860d-xxxxxxxxxxxx'}
+```
+
+5. Copy the `vehicleId` value (e.g., `c3c81ec5-xxxx-4459-b6ba-xxxxxxxxxxxx`) from this log
+6. Add this value as your `UVO_VEHICLE_UUID` in the `.env` file
+7. Run the application again, and it will now connect to your specific vehicle
 
 ## Usage
 Run the application:
