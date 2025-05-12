@@ -35,7 +35,7 @@ The following environment variables can be set in the `.env` file:
 - `UVO_VEHICLE_UUID`: Your vehicle's UUID from Kia UVO/Bluelink (see note below on how to find this)
 - `UVO_PIN`: Your Kia UVO/Bluelink PIN
 - `SPRITMONITOR_APP_TOKEN`: Your Spritmonitor API token (you can use `190e3b1080a39777f369a4e9875df3d7` as described in the hassio forum: https://community.home-assistant.io/t/rest-sensor-for-spritmonitor-de-vehicle-fuel-and-cost-tracker/766137/5)
-- `SPRITMONITOR_BEARER_TOKEN`: Your Spritmonitor bearer token
+- `SPRITMONITOR_BEARER_TOKEN`: Your Spritmonitor bearer token (see [Getting Spritmonitor Tokens](#getting-spritmonitor-tokens) section below)
 - `SPRITMONITOR_VEHICLE_ID`: Your vehicle ID on Spritmonitor
 - `SPRITMONITOR_TANK_ID`: Tank ID for your vehicle (default: 1)
 - `ELECTRICITY_PRICE`: Price of electricity per kWh (default: 41)
@@ -239,13 +239,49 @@ docker pull ghcr.io/amargo/uvo2sprit:main
 docker pull gszoboszlai/uvo2sprit:latest
 
 # Create a .env file with your credentials (see Configuration section)
-# Then run the container (using either image):
+# Then run the container:
 docker run --rm -v ${PWD}/.env:/app/.env ghcr.io/amargo/uvo2sprit:main
 # or
 docker run --rm -v ${PWD}/.env:/app/.env gszoboszlai/uvo2sprit:latest
 ```
 
 The container will automatically fetch and upload your trip data according to the configuration in your `.env` file.
+
+### Scheduling with Crontab
+
+You can use crontab to run the application at a specific time each day.
+
+#### For Python installation:
+
+```bash
+# Edit your crontab
+crontab -e
+
+# Add a line to run the application at 3:15 AM every day
+15 3 * * * cd /path/to/uvo2sprit && python main.py >> /path/to/uvo2sprit/uvo2sprit.log 2>&1
+```
+
+#### For Docker installation:
+
+```bash
+# Edit your crontab
+crontab -e
+
+# Add a line to run the Docker container at 3:15 AM every day
+15 3 * * * cd /path/to/uvo2sprit && docker run --rm -v ${PWD}/.env:/app/.env ghcr.io/amargo/uvo2sprit:main >> /path/to/uvo2sprit/uvo2sprit.log 2>&1
+```
+
+## Getting Spritmonitor Tokens
+
+To use this application, you'll need to obtain the necessary tokens from Spritmonitor:
+
+**Bearer Token**: Create a new access bearer token on the [Spritmonitor Password Page](https://www.spritmonitor.de/en/password.html). This is your personal authentication token.
+
+Add it to your `.env` file:
+
+```
+SPRITMONITOR_BEARER_TOKEN='your_bearer_token'
+```
 
 ---
 
