@@ -87,6 +87,24 @@ hyundai_kia_connect_api.KiaUvoApiEU[xxxxx] DEBUG hyundai_kia_connect_api - Get V
 7. Run the application again, and it will now connect to your specific vehicle
 
 
+## Spritmonitor Vehicle Settings
+
+You need to configure the following settings for your vehicle:
+
+### Required Settings:
+- **Bordcomputer unit**: Set to `kWh/100km`
+- **Manufacturer MPG**: Enter your vehicle's consumption in kWh/100km (Kia e-niro my20: 15.9)
+
+### Recommended Additional Settings:
+- **Battery capacity**: Enter your vehicle's battery capacity in kWh (Kia e-niro my20: 64.0)
+- **Odometer in**: Set to your preferred unit (Kilometers/Miles)
+- **Country/City/Rest**: Fill in your location details
+- **License number**: Optional, for your reference
+- **Note**: You can add a description of your vehicle or usage
+
+### Privacy Options
+Your entries (fuel-ups, expenses, images) for this vehicle are published on Spritmonitor.de and its apps. You can restrict the visibility of certain information for others in the privacy settings.
+
 ## Spritmonitor Currency IDs
 
 The following currency IDs are supported by Spritmonitor:
