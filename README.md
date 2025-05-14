@@ -41,6 +41,23 @@ The following environment variables can be set in the `.env` file:
 - `ELECTRICITY_PRICE`: Price of electricity per kWh (default: 41)
 - `CURRENCY_ID`: Currency ID for electricity price (default: 11 for HUF, see Currency IDs section)
 
+### Hungarian Electricity Prices (2025)
+
+The following table shows electricity prices in different regions of Hungary:
+
+| Region | Standard Rate (HUF/kWh) | Reduced Rate (HUF/kWh) | Market Price (HUF/kWh) |
+|--------|-------------------------|------------------------|-------------------------|
+| Budapest (ELMŰ) | 41.0 | 36.9 | 70-90 |
+| East Hungary (ÉMÁSZ) | 41.0 | 36.9 | 70-90 |
+| West Hungary (E.ON) | 41.0 | 36.9 | 70-90 |
+| South Hungary (DÉMÁSZ) | 41.0 | 36.9 | 70-90 |
+
+Notes:
+- Standard Rate: Government-regulated price for consumption up to 2523 kWh/year
+- Reduced Rate: For households with electric heating or solar panels with specific conditions
+- Market Price: Variable price for consumption above the subsidized limit or for commercial users
+- Solar panel users: If you have solar panels, you might want to use the market or standard price for a more accurate cost calculation.
+
 ### Finding Your Vehicle ID
 To find your vehicle ID (needed for the `UVO_VEHICLE_UUID` setting):
 
