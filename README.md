@@ -38,8 +38,10 @@ The following environment variables can be set in the `.env` file:
 - `SPRITMONITOR_BEARER_TOKEN`: Your Spritmonitor bearer token (see [Getting Spritmonitor Tokens](#getting-spritmonitor-tokens) section below)
 - `SPRITMONITOR_VEHICLE_ID`: Your vehicle ID on Spritmonitor
 - `SPRITMONITOR_TANK_ID`: Tank ID for your vehicle (default: 1)
-- `ELECTRICITY_PRICE`: Price of electricity per kWh (default: 41)
+- `ELECTRICITY_PRICE`: Price of electricity per kWh (optional, no default value)
 - `CURRENCY_ID`: Currency ID for electricity price (default: 11 for HUF, see Currency IDs section)
+- `COUNTRY`: Country code for charging location (default: HU)
+- `STATION_NAME`: Name of the charging station (default: home)
 
 ### Hungarian Electricity Prices (2025)
 

@@ -176,9 +176,6 @@ class SpritMonitorClient:
             "trip": data["trip"],
             "quantity": data["quantity"],
             "type": data["type"],  # can be: invalid, full, notfull, first
-            "price": data["price"],
-            "currencyid": data["currencyid"],
-            "pricetype": data["pricetype"],
             "fuelsortid": "19",  # Elektrizität (ID 19) or Ökostrom (ID 24)
             "quantityunitid": data["quantityunitid"],
             "charge_info": f"{data['charge_info']},source_vehicle",  # add source_vehicle since we get data from the car
@@ -190,6 +187,12 @@ class SpritMonitorClient:
             "location": data.get("location", ""),
             "position": data.get("position", "")
         }
+        
+        # Add price related fields only if they exist
+        if "price" in data and data["price"] is not None:
+            request_data["price"] = data["price"]
+            request_data["currencyid"] = data["currencyid"]
+            request_data["pricetype"] = data["pricetype"]
 
         # Only add charging power and duration if they are valid values
         charging_power = data.get("charging_power")

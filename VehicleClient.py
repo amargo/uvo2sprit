@@ -47,11 +47,18 @@ class VehicleClient:
             app_token=os.environ.get("SPRITMONITOR_APP_TOKEN")
         )
 
-        # Get electricity price from environment variable, default to 41
-        self.electricity_price = float(os.getenv('ELECTRICITY_PRICE', 41))
+        # Get electricity price from environment variable (optional)
+        electricity_price_str = os.getenv('ELECTRICITY_PRICE')
+        self.electricity_price = float(electricity_price_str) if electricity_price_str is not None else None
         
         # Get currency ID from environment variable, default to 11 (HUF)
         self.currency_id = int(os.getenv('CURRENCY_ID', 11))
+        
+        # Get country from environment variable, default to HU
+        self.country = os.getenv('COUNTRY', 'HU')
+        
+        # Get station name from environment variable, default to home
+        self.station_name = os.getenv('STATION_NAME', 'home')
 
         # interval in seconds between checks for cached requests
         # we are limited to 200 requests a day, including cached
@@ -407,8 +414,8 @@ class VehicleClient:
                 "quantity": round(day_stats.total_consumed / 1000, 1),  # Convert Wh to kWh
                 "fuelsortid": 5,  # 5 = Electricity
                 "quantityunitid": 5,  # kWh
-                "country": "HU",
-                "stationname": "home",
+                "country": self.country,
+                "stationname": self.station_name,
                 "charging_power": self.charging_power_in_kilowatts,
                 "charging_duration": 0,  # We don't have this info from KIA UVO
                 "charge_info": f"{self.charge_type.value.lower()},source_vehicle",
@@ -417,10 +424,16 @@ class VehicleClient:
                 "bc_consumption": round(day_stats.distance / (day_stats.total_consumed / 1000), 1) if day_stats.total_consumed > 0 else 0,  # km/kWh
                 "bc_quantity": round(day_stats.total_consumed / 1000, 1),  # Total consumption in kWh
                 "bc_speed": 0,  # Will be updated if we have valid trips
-                "price": self.electricity_price,  # Price per kWh
-                "currencyid": self.currency_id,
-                "pricetype": 1,  # 1 = unit price (per kWh)
             }
+            
+            # Add price related fields only if electricity_price is set
+            if self.electricity_price is not None:
+                consumption_data.update({
+                    "price": self.electricity_price,  # Price per kWh
+                    "currencyid": self.currency_id,
+                    "pricetype": 1  # 1 = unit price (per kWh)
+                })
+            
             consumption_data["note"] = (
                 f"Engine: {round(day_stats.engine_consumption / 1000, 1)} kWh\n"
                 f"Climate: {round(day_stats.climate_consumption / 1000, 1)} kWh\n"
