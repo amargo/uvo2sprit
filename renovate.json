@@ -7,7 +7,7 @@
     "group:monorepos",
     "group:recommended",
     ":pinDigestsDisabled",
-    "schedule:daily",
+
     "workarounds:all"
   ],
   "enabledManagers": [
