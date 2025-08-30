@@ -16,7 +16,9 @@ def main():
         username=os.environ["UVO_USERNAME"],
         password=os.environ["UVO_PASSWORD"],
         pin=os.environ["UVO_PIN"],
-        vehicle_uuid=os.environ["UVO_VEHICLE_UUID"]
+        vehicle_uuid=os.environ["UVO_VEHICLE_UUID"],
+        use_kiauvoapieu=os.environ.get("UVO_USE_KIAUVOAPIEU", "True").lower() in ("true", "1", "yes"),
+        kia_language=os.environ.get("UVO_KIA_LANGUAGE", "hu")
     )
     
     # Initialize vehicle connection

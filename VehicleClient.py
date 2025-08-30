@@ -5,6 +5,7 @@ import datetime
 from datetime import timedelta
 from enum import Enum
 from hyundai_kia_connect_api import Vehicle, VehicleManager
+from custom_hyundai_kia_connect_api.KiaUvoApiEU import KiaUvoApiEU
 from hyundai_kia_connect_api.exceptions import RateLimitingError, APIError, RequestTimeoutError
 from SpritMonitorClient import SpritMonitorClient
 
@@ -22,13 +23,15 @@ class VehicleClient:
     - send consumption data to Spritmonitor API
     """
 
-    def __init__(self, username: str, password: str, pin: str, vehicle_uuid: str):
+    def __init__(self, username: str, password: str, pin: str, vehicle_uuid: str, use_kiauvoapieu: bool = False, kia_language: str = "hu"):
         """
         Initialize the VehicleClient
         :param username: UVO/Bluelink username
         :param password: UVO/Bluelink password
         :param pin: UVO/Bluelink PIN
         :param vehicle_uuid: UVO/Bluelink vehicle UUID
+        :param use_kiauvoapieu: Use direct KiaUvoApiEU backend (default: False)
+        :param kia_language: Language for KiaUvoApiEU (default: "hu")
         """
         self.interval_in_seconds: int = 3600 * 4  # default
         self.charging_power_in_kilowatts: int = 0  # default = 0 (not charging)
@@ -38,6 +41,8 @@ class VehicleClient:
         self.logger = logging.getLogger(__name__)
         self.trips = None  # vehicle trips. better motel than the one in the library
         self.vehicle_uuid = vehicle_uuid
+        self.use_kiauvoapieu = use_kiauvoapieu
+        self.kia_language = kia_language
 
         # Initialize SpritMonitor client
         self.spritmonitor_vehicle_id = os.environ.get("SPRITMONITOR_VEHICLE_ID")
@@ -72,10 +77,38 @@ class VehicleClient:
         self.DC_CHARGE_FORCE_REFRESH_INTERVAL = 1800
         self.AC_CHARGE_FORCE_REFRESH_INTERVAL = 1800
 
-        self.vm = VehicleManager(region=1, brand=1, username=username,
-                                 password=password, pin=pin)
+        if self.use_kiauvoapieu:
+            self._init_kiauvoapieu(username, password, pin)
+        else:
+            self._init_vehicle_manager(username, password, pin)
 
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    def _init_kiauvoapieu(self, username, password, pin):
+        self.api = KiaUvoApiEU(region=1, brand=1, language=self.kia_language)
+        self.token = self.api.login(username, password)
+        if self.token is None:
+            raise RuntimeError("KiaUvoApiEU.login() did not return a valid token. Ellenőrizd a belépési adatokat és a refresh_token-t!")
+        self.vehicles = self.api.get_vehicles(self.token)
+        self.vm = VehicleManager(region=1, brand=1, username=username, password=password, pin=pin)
+        self.vm.api = self.api
+        self.vm.token = self.token
+        self.vm.vehicles = {v.id: v for v in self.vehicles}
+        self.vehicle = self.vm.get_vehicle(self.vehicle_uuid)
+
+    def _init_vehicle_manager(self, username, password, pin):
+        self.vm = VehicleManager(region=1, brand=1, username=username, password=password, pin=pin)
+        self.logger.info("Initializing vehicle connection...")
+        if len(self.vm.vehicles) == 0 and self.vm.token:
+            # supposed bug in lib: if initialization fails due to rate limiting, vehicles list is never filled
+            # reset token to login again, the lib will then fill the list correctly
+            self.vm.token = None
+        try:
+            self.vm.check_and_refresh_token()
+        except Exception as e:
+            self.handle_api_exception(e)
+            raise
+        self.vehicle = self.vm.get_vehicle(self.vehicle_uuid)
 
     def initialize(self):
         """
@@ -83,20 +116,6 @@ class VehicleClient:
         
         :raises: Exception if token refresh or vehicle initialization fails
         """
-        self.logger.info("Initializing vehicle connection...")
-
-        if len(self.vm.vehicles) == 0 and self.vm.token:
-            # supposed bug in lib: if initialization fails due to rate limiting, vehicles list is never filled
-            # reset token to login again, the lib will then fill the list correctly
-            self.vm.token = None
-
-        try:
-            self.vm.check_and_refresh_token()
-        except Exception as e:
-            self.handle_api_exception(e)
-            raise
-
-        self.vehicle = self.vm.get_vehicle(self.vehicle_uuid)
 
         try:
             response = self.vm.api._get_cached_vehicle_state(self.vm.token, self.vehicle)
@@ -407,11 +426,22 @@ class VehicleClient:
             #     if not hasattr(self, 'spritmonitor_tank_id'):
             #         raise Exception("No electric charging tank found in Spritmonitor vehicle configuration")
             # Convert KIA UVO data format to Spritmonitor format
+
+            quantity_mode = os.getenv("SM_QUANTITY_MODE", "net").lower()  # net | gross
+
+            net_kwh = max((day_stats.total_consumed - day_stats.regenerated_energy) / 1000.0, 0.0)
+            gross_kwh = max(day_stats.total_consumed / 1000.0, 0.0)
+
+            if quantity_mode == "gross":
+                qty_kwh = gross_kwh
+            else:
+                qty_kwh = net_kwh  # default
+
             consumption_data = {
                 "date": day_stats.date.strftime("%d.%m.%Y"),  # Convert to DD.MM.YYYY format
                 "odometer": int(day_stats.odometer),
                 "trip": round(day_stats.distance, 1),  # distance in km
-                "quantity": round(day_stats.total_consumed / 1000, 1),  # Convert Wh to kWh
+                "quantity": round(qty_kwh, 1),  # Convert Wh to kWh
                 "fuelsortid": 5,  # 5 = Electricity
                 "quantityunitid": 5,  # kWh
                 "country": self.country,
@@ -421,8 +451,8 @@ class VehicleClient:
                 "charge_info": f"{self.charge_type.value.lower()},source_vehicle",
                 "percent": self.vehicle.ev_battery_percentage,
                 "type": "full",  # We don't have this info from KIA UVO, set to full so Spritmonitor calculates consumption correctly
-                "bc_consumption": round(day_stats.distance / (day_stats.total_consumed / 1000), 1) if day_stats.total_consumed > 0 else 0,  # km/kWh
-                "bc_quantity": round(day_stats.total_consumed / 1000, 1),  # Total consumption in kWh
+                "bc_consumption": round(day_stats.distance / qty_kwh, 1) if qty_kwh > 0 else 0,  # km/kWh
+                "bc_quantity": round(net_kwh, 1),  # Total consumption in kWh
                 "bc_speed": 0,  # Will be updated if we have valid trips
             }
             
@@ -433,14 +463,15 @@ class VehicleClient:
                     "currencyid": self.currency_id,
                     "pricetype": 1  # 1 = unit price (per kWh)
                 })
-            
+
             consumption_data["note"] = (
                 f"Engine: {round(day_stats.engine_consumption / 1000, 1)} kWh\n"
                 f"Climate: {round(day_stats.climate_consumption / 1000, 1)} kWh\n"
                 f"Electronics: {round(day_stats.onboard_electronics_consumption / 1000, 1)} kWh\n"
                 f"Battery Care: {round(day_stats.battery_care_consumption / 1000, 1)} kWh\n"
                 f"Regenerated: {round(day_stats.regenerated_energy / 1000, 1)} kWh\n"
-                f"Net Consumption: {round((day_stats.total_consumed - day_stats.regenerated_energy) / 1000, 1)} kWh\n"
+                f"Gross: {round(gross_kwh, 1)} kWh\n"
+                f"Net: {round(net_kwh, 1)} kWh\n"
             )
             
             if hasattr(self.vehicle, 'day_trip_info') and self.vehicle.day_trip_info and hasattr(self.vehicle.day_trip_info, 'trip_list'):
