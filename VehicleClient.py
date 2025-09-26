@@ -427,7 +427,7 @@ class VehicleClient:
             #         raise Exception("No electric charging tank found in Spritmonitor vehicle configuration")
             # Convert KIA UVO data format to Spritmonitor format
 
-            quantity_mode = os.getenv("SM_QUANTITY_MODE", "net").lower()  # net | gross
+            quantity_mode = os.getenv("SM_QUANTITY_MODE", "gross").lower()  # net | gross
 
             net_kwh = max((day_stats.total_consumed - day_stats.regenerated_energy) / 1000.0, 0.0)
             gross_kwh = max(day_stats.total_consumed / 1000.0, 0.0)
