@@ -5,3 +5,4 @@ coloredlogs==15.0.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
 requests==2.32.5
+tzdata>=2024.1

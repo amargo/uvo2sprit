@@ -5,7 +5,7 @@ import datetime
 from datetime import timedelta
 from enum import Enum
 from hyundai_kia_connect_api import Vehicle, VehicleManager
-from custom_hyundai_kia_connect_api.KiaUvoApiEU import KiaUvoApiEU
+from custom_hyundai_kia_connect_api.KiaUvoApiEU import KiaUvoApiEU as CustomKiaUvoApiEU
 from hyundai_kia_connect_api.exceptions import RateLimitingError, APIError, RequestTimeoutError
 from SpritMonitorClient import SpritMonitorClient
 
@@ -85,10 +85,10 @@ class VehicleClient:
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     def _init_kiauvoapieu(self, username, password, pin):
-        self.api = KiaUvoApiEU(region=1, brand=1, language=self.kia_language)
+        self.api = CustomKiaUvoApiEU(region=1, brand=1, language=self.kia_language)
         self.token = self.api.login(username, password)
         if self.token is None:
-            raise RuntimeError("KiaUvoApiEU.login() did not return a valid token. Ellenőrizd a belépési adatokat és a refresh_token-t!")
+            raise RuntimeError("CustomKiaUvoApiEU.login() did not return a valid token.")
         self.vehicles = self.api.get_vehicles(self.token)
         self.vm = VehicleManager(region=1, brand=1, username=username, password=password, pin=pin)
         self.vm.api = self.api
