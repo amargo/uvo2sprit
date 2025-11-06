@@ -94,14 +94,16 @@
       "groupName": "🔖 Patch updates"
     },
     {
-      "matchPackagePatterns": [
-        "coloredlogs",
-        "python-dateutil"
+      "labels": [
+        "abandoned-dependency"
       ],
-      "labels": ["abandoned-dependency"],
       "automerge": true,
-      "stabilityDays": 3,
-      "prPriority": 5
+      "minimumReleaseAge": "3 days",
+      "prPriority": 5,
+      "matchPackageNames": [
+        "/coloredlogs/",
+        "/python-dateutil/"
+      ]
     }
   ],
   "vulnerabilityAlerts": {
