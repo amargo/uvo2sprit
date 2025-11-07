@@ -7,7 +7,8 @@
     "group:monorepos",
     "group:recommended",
     ":pinDigestsDisabled",
-    "workarounds:all"
+    "workarounds:all",
+    "abandonments:recommended"
   ],
   "enabledManagers": [
     "dockerfile",
@@ -16,7 +17,13 @@
   ],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "📦 Dependency Dashboard",
-  "abandonmentThreshold": "365",
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": true,
+    "labels": [
+      "security"
+    ]
+  },
   "osvVulnerabilityAlerts": true,
   "platformAutomerge": true,
   "packageRules": [
@@ -94,24 +101,18 @@
       "groupName": "🔖 Patch updates"
     },
     {
-      "labels": [
-        "abandoned-dependency"
-      ],
-      "automerge": true,
-      "minimumReleaseAge": "3 days",
-      "prPriority": 5,
+      "description": "dateutil ritkán ad ki, ne legyen túl szigorú a küszöb",
       "matchPackageNames": [
-        "/coloredlogs/",
-        "/python-dateutil/"
-      ]
+        "python-dateutil"
+      ],
+      "abandonmentThreshold": "4 years"
+    },
+    {
+      "description": "coloredlogs: ideiglenesen elfogadjuk",
+      "matchPackageNames": [
+        "coloredlogs"
+      ],
+      "abandonmentThreshold": "10 years"
     }
-  ],
-  "vulnerabilityAlerts": {
-    "labels": [
-      "security"
-    ],
-    "osvVulnerabilityAlerts": true,
-    "automerge": true,
-    "enabled": true
-  }
+  ]
 }
