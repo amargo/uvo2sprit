@@ -8,7 +8,8 @@
     "group:recommended",
     ":pinDigestsDisabled",
     "workarounds:all",
-    "abandonments:recommended"
+    "abandonments:recommended",
+    "schedule:monthly"
   ],
   "enabledManagers": [
     "dockerfile",
@@ -113,6 +114,15 @@
         "coloredlogs"
       ],
       "abandonmentThreshold": "10 years"
+    },
+    {
+      "description": "Hyundai/Kia API frissülhet naponta",
+      "matchPackageNames": [
+        "hyundai_kia_connect_api"
+      ],
+      "schedule": [
+        "* 0-3 * * *"
+      ]
     }
   ]
 }
