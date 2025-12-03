@@ -65,6 +65,12 @@ class VehicleClient:
         # Get station name from environment variable, default to home
         self.station_name = os.getenv('STATION_NAME', 'home')
 
+        # Spritmonitor percent handling mode:
+        # When True (default), we always send 100% state-of-charge so that Spritmonitor
+        # does not apply its partial-refueling heuristics, which would distort consumption
+        # for our daily aggregated EV data.
+        self.spritmonitor_force_full_percent = os.getenv("SM_FORCE_FULL_PERCENT", "true").lower() in ("1", "true", "yes")
+
         # interval in seconds between checks for cached requests
         # we are limited to 200 requests a day, including cached
         # that's about one every 8 minutes
@@ -449,7 +455,8 @@ class VehicleClient:
                 "charging_power": self.charging_power_in_kilowatts,
                 "charging_duration": 0,  # We don't have this info from KIA UVO
                 "charge_info": f"{self.charge_type.value.lower()},source_vehicle",
-                "percent": self.vehicle.ev_battery_percentage,
+                # Force 100% by default so Spritmonitor does not apply partial-refueling heuristics
+                "percent": 100 if self.spritmonitor_force_full_percent else self.vehicle.ev_battery_percentage,
                 "type": "full",  # We don't have this info from KIA UVO, set to full so Spritmonitor calculates consumption correctly
                 "bc_consumption": round(day_stats.distance / qty_kwh, 1) if qty_kwh > 0 else 0,  # km/kWh
                 "bc_quantity": round(net_kwh, 1),  # Total consumption in kWh
