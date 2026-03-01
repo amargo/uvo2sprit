@@ -1,4 +1,4 @@
-hyundai_kia_connect_api==4.5.0
+hyundai_kia_connect_api==4.7.0
 # Updated from coloredlogs==15.0.1 (abandoned)
 coloredlogs==15.0.1
 # Using the latest python-dateutil version
