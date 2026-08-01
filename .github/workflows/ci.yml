@@ -27,7 +27,7 @@ jobs:
       IMAGE_NAME: uvo2sprit
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Docker meta
         id: meta
