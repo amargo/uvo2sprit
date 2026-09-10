@@ -2,12 +2,14 @@ name: Renovate
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 3 * * *"
+    # 01:00 UTC = 02:00/03:00 Europe/Budapest -> bőven a renovate.json
+    # "after 1am and before 5am" ablakon belül, DST-től függetlenül
+    - cron: "0 1 * * *"
 jobs:
   renovate:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
       issues: write
       pull-requests: write
