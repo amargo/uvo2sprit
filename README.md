@@ -6,7 +6,7 @@ A Python-based application that automatically retrieves historical drive data fr
 - Uploads trip data to SpritMonitor.de
 - Supports historical data retrieval
 - Handles both AC and DC charging data
-- Rate limiting aware to prevent API blocks
+- Rate limiting aware to prevent API blocks (configurable per-run backfill cap)
 - Smart duplicate detection
 - Automatic odometer calculation from trip distances
 - Focus on historical data for accuracy
@@ -34,6 +34,7 @@ The following environment variables can be set in the `.env` file:
 - `UVO_PASSWORD`: Your Kia UVO/Bluelink password
 - `UVO_VEHICLE_UUID`: Your vehicle's UUID from Kia UVO/Bluelink (see note below on how to find this)
 - `UVO_PIN`: Your Kia UVO/Bluelink PIN
+- `UVO_KIA_LANGUAGE`: Language for the UVO/Bluelink API (default: `hu`)
 - `SPRITMONITOR_APP_TOKEN`: Your Spritmonitor API token (you can use `190e3b1080a39777f369a4e9875df3d7` as described in the hassio forum: https://community.home-assistant.io/t/rest-sensor-for-spritmonitor-de-vehicle-fuel-and-cost-tracker/766137/5)
 - `SPRITMONITOR_BEARER_TOKEN`: Your Spritmonitor bearer token (see [Getting Spritmonitor Tokens](#getting-spritmonitor-tokens) section below)
 - `SPRITMONITOR_VEHICLE_ID`: Your vehicle ID on Spritmonitor
@@ -42,6 +43,22 @@ The following environment variables can be set in the `.env` file:
 - `CURRENCY_ID`: Currency ID for electricity price (default: 11 for HUF, see Currency IDs section)
 - `COUNTRY`: Country code for charging location (default: HU)
 - `STATION_NAME`: Name of the charging station (default: home)
+
+Optional upload/behaviour settings:
+- `SM_QUANTITY_MODE`: `gross` (default, includes regenerated energy) or `net`
+- `SM_FUELSORT_ID`: Spritmonitor fuel sort, `19` = Elektrizität (default), `24` = Ökostrom
+- `SM_FORCE_FULL_PERCENT`: always report 100% SoC so Spritmonitor does not apply its
+  partial-refueling heuristics to daily aggregates (default: `true`)
+- `SM_SEND_LIVE_CHARGE_INFO`: attach the car's *current* charge type and power to the
+  historical entries. Off by default, because that state does not describe the day
+  being uploaded (default: `false`)
+- `SM_MAX_DAYS_PER_RUN`: how many missing days to backfill per run. Each day costs at
+  least one UVO API call and the daily limit is 200 (default: `10`)
+- `BATTERY_TOTAL_KWH`: usable + unusable kWh + charger losses, used for the charging
+  power estimate (default: `70`, Kia e-Niro MY20)
+- `DATA_TIMEZONE`: timezone used to decide where a day starts and ends (default:
+  `Europe/Budapest`). Matters when running in a UTC container.
+- `LOG_LEVEL`: `DEBUG` to see the raw API responses (default: `INFO`)
 
 ### Hungarian Electricity Prices (2025)
 
@@ -64,7 +81,7 @@ Notes:
 To find your vehicle ID (needed for the `UVO_VEHICLE_UUID` setting):
 
 1. First, set up your `.env` file with just your `UVO_USERNAME`, `UVO_PASSWORD`, and `UVO_PIN` (leave `UVO_VEHICLE_UUID` empty or commented out)
-2. Run the application once: `python main.py`
+2. Run the application once with debug logging: `LOG_LEVEL=DEBUG python main.py`
 3. The application will automatically attempt to retrieve your vehicles from the Kia UVO API
 4. Look for a debug log message that looks like this:
 
@@ -254,13 +271,16 @@ The application will:
 - Odometer values are calculated from trip distances
 - Historical data is uploaded once complete
 - Today's data is skipped to avoid partial data
-- Proper handling of electricity as fuel type (fuelsortid=5)
+- Proper handling of electricity as fuel type (`fuelsortid=19`, Elektrizität)
 - Detailed consumption breakdown in notes (engine, climate, electronics, etc.)
 
 ## Rate Limiting
-- Kia UVO API is limited to 200 requests per day
-- The application is designed to handle these limits gracefully
-- By default, it only fetches the last 30 days of data
+- Kia UVO API is limited to 200 requests per day, cached requests included
+- One run costs roughly 4 calls plus 1 call per backfilled day
+- `SM_MAX_DAYS_PER_RUN` (default 10) caps the backfill; the rest is picked up on
+  the next run, so a long gap is filled over several days instead of hitting the limit
+- On a rate limit error the run stops immediately instead of retrying
+- The library fetches roughly the last 30 days of driving stats
 
 ## Docker
 [![Docker Image](https://github.com/amargo/uvo2sprit/actions/workflows/ci.yml/badge.svg)](https://github.com/amargo/uvo2sprit/pkgs/container/uvo2sprit)
@@ -307,6 +327,20 @@ crontab -e
 # Add a line to run the Docker container at 3:15 AM every day
 15 3 * * * cd /path/to/uvo2sprit && docker run --rm -v ${PWD}/.env:/app/.env ghcr.io/amargo/uvo2sprit:main >> /path/to/uvo2sprit/uvo2sprit.log 2>&1
 ```
+
+## Development
+
+```bash
+pip install -r requirements-dev.txt
+ruff check main.py VehicleClient.py SpritMonitorClient.py tests/
+ruff format --check main.py VehicleClient.py SpritMonitorClient.py tests/
+pytest -q
+```
+
+The Spritmonitor payload building (`VehicleClient.build_consumption_payload` and
+`SpritMonitorClient.build_consumption_params`) is deliberately separated from the
+network calls so it can be tested without credentials. Sample API responses are in
+`example/`.
 
 ## Getting Spritmonitor Tokens
 

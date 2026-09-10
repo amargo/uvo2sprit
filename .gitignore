@@ -172,3 +172,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Project secrets / local state
+kia_tokens.json
+*.tokens.json

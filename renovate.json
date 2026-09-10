@@ -3,14 +3,18 @@
   "extends": [
     "config:recommended",
     "config:best-practices",
-    ":ignoreModulesAndTests",
     "group:monorepos",
     "group:recommended",
     ":pinDigestsDisabled",
     "workarounds:all",
-    "abandonments:recommended",
-    "schedule:monthly"
+    "abandonments:recommended"
   ],
+  "timezone": "Europe/Budapest",
+  "schedule": [
+    "after 1am and before 5am"
+  ],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 10,
   "enabledManagers": [
     "dockerfile",
     "pip_requirements",
@@ -116,12 +120,9 @@
       "abandonmentThreshold": "10 years"
     },
     {
-      "description": "Hyundai/Kia API frissülhet naponta",
+      "description": "Hyundai/Kia API frissülhet naponta - a globális napi ablak elég",
       "matchPackageNames": [
         "hyundai_kia_connect_api"
-      ],
-      "schedule": [
-        "* 0-3 * * *"
       ]
     }
   ]
