@@ -2,9 +2,9 @@ name: Renovate
 on:
   workflow_dispatch:
   schedule:
-    # 01:00 UTC = 02:00/03:00 Europe/Budapest -> bőven a renovate.json
-    # "after 1am and before 5am" ablakon belül, DST-től függetlenül
-    - cron: "0 1 * * *"
+    # péntek 01:00 UTC = 02:00/03:00 Europe/Budapest -> bőven a renovate.json
+    # "after 1am and before 5am on friday" ablakon belül, DST-től függetlenül
+    - cron: "0 1 * * 5"
 jobs:
   renovate:
     runs-on: ubuntu-latest

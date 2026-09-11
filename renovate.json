@@ -11,7 +11,7 @@
   ],
   "timezone": "Europe/Budapest",
   "schedule": [
-    "after 1am and before 5am"
+    "after 1am and before 5am on friday"
   ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 10,
@@ -120,7 +120,7 @@
       "abandonmentThreshold": "10 years"
     },
     {
-      "description": "Hyundai/Kia API frissülhet naponta - a globális napi ablak elég",
+      "description": "Hyundai/Kia API is frissülhet, de mostantól heti egy futás elég",
       "matchPackageNames": [
         "hyundai_kia_connect_api"
       ]
