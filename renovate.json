@@ -106,21 +106,21 @@
       "automerge": true
     },
     {
-      "description": "dateutil ritkán ad ki, ne legyen túl szigorú a küszöb",
+      "description": "python-dateutil releases rarely, keep a relaxed abandonment threshold",
       "matchPackageNames": [
         "python-dateutil"
       ],
       "abandonmentThreshold": "4 years"
     },
     {
-      "description": "coloredlogs: ideiglenesen elfogadjuk",
+      "description": "coloredlogs: temporarily accepted as-is",
       "matchPackageNames": [
         "coloredlogs"
       ],
       "abandonmentThreshold": "10 years"
     },
     {
-      "description": "Hyundai/Kia API gyakran frissül, de heti egy futás elég",
+      "description": "The Hyundai/Kia API moves fast, but one run per week is enough",
       "matchPackageNames": [
         "hyundai_kia_connect_api"
       ]
