@@ -22,6 +22,8 @@
   ],
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "📦 Dependency Dashboard",
+  "osvVulnerabilityAlerts": true,
+  "platformAutomerge": true,
   "vulnerabilityAlerts": {
     "enabled": true,
     "automerge": true,
@@ -29,8 +31,6 @@
       "security"
     ]
   },
-  "osvVulnerabilityAlerts": true,
-  "platformAutomerge": true,
   "packageRules": [
     {
       "matchDatasources": [
@@ -74,8 +74,8 @@
       "matchUpdateTypes": [
         "minor"
       ],
-      "automerge": true,
-      "groupName": "🐍 Python minor updates"
+      "groupName": "🐍 Python minor updates",
+      "automerge": true
     },
     {
       "matchManagers": [
@@ -95,15 +95,15 @@
         "minor",
         "patch"
       ],
-      "automerge": true,
-      "groupName": "⚡ GitHub Actions updates"
+      "groupName": "⚡ GitHub Actions updates",
+      "automerge": true
     },
     {
       "matchUpdateTypes": [
         "patch"
       ],
-      "automerge": true,
-      "groupName": "🔖 Patch updates"
+      "groupName": "🔖 Patch updates",
+      "automerge": true
     },
     {
       "description": "dateutil ritkán ad ki, ne legyen túl szigorú a küszöb",
@@ -120,7 +120,7 @@
       "abandonmentThreshold": "10 years"
     },
     {
-      "description": "Hyundai/Kia API is frissülhet, de mostantól heti egy futás elég",
+      "description": "Hyundai/Kia API gyakran frissül, de heti egy futás elég",
       "matchPackageNames": [
         "hyundai_kia_connect_api"
       ]
