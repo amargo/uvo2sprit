@@ -1,4 +1,4 @@
-hyundai_kia_connect_api==4.33.1
+hyundai_kia_connect_api==4.35.0
 coloredlogs==15.0.1
 python-dotenv==1.2.4
 requests==2.34.2
